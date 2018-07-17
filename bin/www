@@ -1,0 +1,81 @@
+#!/usr/bin/env node
+
+var app = require('../app');
+
+var debug = require('debug')('mean-app:server');
+
+var http = require('http');
+
+//Get port from environment and store in express
+
+var port = normalizePort(process.env.PORT || '3000');
+
+app.set('port',port);
+
+//Create Http Server
+
+var server =  http.createServer(app);
+
+//listen on provided port on all network interfaces
+
+server.listen(port);
+server.on('error' , onError);
+server.on('listening', onListening);
+
+//Normalize a port into number ,string, false
+
+function normalizePort(val) {
+	var port = parseInt(val,10);
+	
+	if(isNaN(port)) {
+	return val;
+	}
+	
+	if (port >= 0) {
+		return port;
+	}
+	
+	return false;
+}
+
+//Event listener for http server 'error ' event
+
+
+function onError(error) {
+	if(error.syscall !== 'listen') {
+	throw error;
+	}
+	
+	var bind = typeof port === 'string'
+	? 'pipe' + port
+	: 'Port' + port ;
+	
+	switch(error.code) {
+	case 'EACCES':
+		console.error(bind + ' requires elevated priveleges');
+		process.exit(1);
+		break;
+		
+	case 'EADDRINUSE' :
+	    console.error(bind + 'is already in use');
+	    process.exit(1);
+	    break;
+	    
+	 default :
+	    throw error;
+	 }
+}
+
+
+//event listener
+
+function onListening(){
+	var addr = server.address();
+	var bind = typeof addr === 'string'
+	? 'pipe' + port
+	: 'Port' + port ;
+	
+	debug('Listening on ' + bind);
+	
+	console.log("The App started on port :" +port);
+}
